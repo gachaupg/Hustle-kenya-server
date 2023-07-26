@@ -6,8 +6,10 @@ const userSchema = mongoose.Schema(
     email: { type: String, unique: true },
     password: { type: String },
     phone: { type: String },
+    country: { type: String },
     img: { type: String },
-    admin: { type: Boolean, default: false },
+    isAdmin: { type: Boolean, default: false },
+    googleId: { type: String, required: false },
   },
 
   { timestamps: true }
