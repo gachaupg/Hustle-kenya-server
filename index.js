@@ -14,7 +14,7 @@ const corsOptions = {
   optionSuccessStatus: 200,
 };
 
-// port
+// port 
 const PORT = process.env.PORT;
 
 // middlewares
