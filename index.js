@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import userRouter from "./routes/auth.js";
+import userContentsRouter from "./routes/userContents.js";
 import bodyParser from "body-parser";
 
 // cross origin options
@@ -38,7 +39,7 @@ app.get("/", (req, res) => {
 // all apis
 
 app.use("/users", userRouter);
-
+app.use('/content',userContentsRouter)
 // mongo db  conecctions
 
 mongoose

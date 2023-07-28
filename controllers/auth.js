@@ -39,7 +39,7 @@ export const signin = async (req, res) => {
 // register api 'users must use their original emails
 
 export const signup = async (req, res) => {
-  const { email, password, phone, name, isAdmin, img, country } = req.body;
+  const { email, password, phone, name,userName,date,subscribers,subscribed,unSubscribed, isAdmin, img, country } = req.body;
   try {
     const oldUser = await UserModal.findOne({ email });
 
@@ -55,13 +55,17 @@ export const signup = async (req, res) => {
 
     const result = await UserModal.create({
       email,
-
+      unSubscribed,
+      subscribers,
+      subscribed,
+      userName,
       password: hashedPassword,
       name,
       isAdmin,
       img,
       phone,
       country,
+      date,
     });
 
     const token = jwt.sign(
