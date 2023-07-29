@@ -31,7 +31,7 @@ export const signin = async (req, res) => {
 
     res.status(200).json({ result: oldUser, token });
   } catch (error) {
-    res.status(500).json({ message: "Something in server is wrong" });
+    res.status(500).json({ message: "Something went wrong" });
     console.log(error);
   }
 };
