@@ -105,6 +105,85 @@ export const RemovedisLike = async (req, res) => {
   }
 };
 
+export const Addsubscribers = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+  
+    const subscriberObject = { _id: '64c21359c721da6ce2413034' };
+
+    const updatedUserContent = await userContents.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: { subscribers: subscriberObject },
+      },
+      { new: true }
+    );
+
+    res.json(updatedUserContent);
+  } catch (error) {
+    console.error("Error updating documents:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const Removesubscriber = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const subscriberIdToRemove = "64c21359c721da6ce241303a";
+
+  
+    await userContents.updateOne({ _id: id }, { $pull: { subscribers: subscriberIdToRemove } });
+    const updatedUserContent = await userContents.findById(id);
+
+    res.json(updatedUserContent);
+  } catch (error) {
+    console.error("Error updating documents:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+export const Addissubscribers = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+   
+    const subscriberObject = { _id: '64c21359c721da6ce241303f' };
+
+    const updatedUserContent = await userContents.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: {  subscriberObject },
+      },
+      { new: true }
+    );
+
+    res.json(updatedUserContent);
+  } catch (error) {
+    console.error("Error updating documents:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const Removedissubscriber = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const subscriberIdToRemove = "64c21359c721da6ce241303a";
+
+  
+    await userContents.updateOne({ _id: id }, { $pull: { subscriberIdToRemove } });
+    const updatedUserContent = await userContents.findById(id);
+
+    res.json(updatedUserContent);
+  } catch (error) {
+    console.error("Error updating documents:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }};
+
 export const getAllUserContents = async (req, res) => {
   try {
     const userContent = await userContents.find();
