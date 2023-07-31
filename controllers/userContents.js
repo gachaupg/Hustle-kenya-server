@@ -1,6 +1,7 @@
 import UserModal from "../models/auth.js";
 import userContents from "../models/userContents.js";
 import mongoose from "mongoose";
+const { ObjectId } = mongoose.Types;
 
 export const createUser = async (req, res) => {
   const userData = req.body;
@@ -20,6 +21,101 @@ export const createUser = async (req, res) => {
     res.status(404).json({ message: "ooops !! Data not found" });
   }
 };
+export const Addlikes = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Step 1: Now that all documents have 'likes' as an array, proceed with the logic
+    const likeObject = { _id: '64c21359c721da6ce2413034' };
+
+    const updatedUserContent = await userContents.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: { likes: likeObject },
+      },
+      { new: true }
+    );
+
+    res.json(updatedUserContent);
+  } catch (error) {
+    console.error("Error updating documents:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
+
+
+export const RemoveLike = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const likeIdToRemove = "64c21359c721da6ce241303a";
+
+  
+    await userContents.updateOne({ _id: id }, { $pull: { likes: likeIdToRemove } });
+    const updatedUserContent = await userContents.findById(id);
+
+    res.json(updatedUserContent);
+  } catch (error) {
+    console.error("Error updating documents:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+export const Adddislikes = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+   
+    const likeObject = { _id: '64c21359c721da6ce241303f' };
+
+    const updatedUserContent = await userContents.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: { dislikes: likeObject },
+      },
+      { new: true }
+    );
+
+    res.json(updatedUserContent);
+  } catch (error) {
+    console.error("Error updating documents:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const RemovedisLike = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const likeIdToRemove = "64c21359c721da6ce241303a";
+
+  
+    await userContents.updateOne({ _id: id }, { $pull: { dislikes: likeIdToRemove } });
+    const updatedUserContent = await userContents.findById(id);
+
+    res.json(updatedUserContent);
+  } catch (error) {
+    console.error("Error updating documents:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const getAllUserContents = async (req, res) => {
   try {
@@ -77,6 +173,16 @@ export const updateUserContent = async (req, res) => {
     additionalInfo,
     
   } = req.body;
+
+
+  
+  
+  
+  
+  
+  
+  
+  
   try {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: `No user exist with id: ${id}` });
