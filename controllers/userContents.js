@@ -25,7 +25,7 @@ export const Addlikes = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Step 1: Now that all documents have 'likes' as an array, proceed with the logic
+  
     const likeObject = { _id: '64c21359c721da6ce2413034' };
 
     const updatedUserContent = await userContents.findByIdAndUpdate(
@@ -104,18 +104,6 @@ export const RemovedisLike = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const getAllUserContents = async (req, res) => {
   try {
