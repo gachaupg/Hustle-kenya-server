@@ -1,8 +1,8 @@
 import express from "express";
-import  { createUser,RemoveLike,Addlikes,Adddislikes,RemovedisLike, deleteUserContent, getAllUserContents, getContentsByUser, getSingleUserContent, updateUserContent } from '../controllers/userContents.js'
+import  { createUser, deleteUserContent, getAllUserContents, getContentsByUser, getSingleUserContent, updateUserContent } from '../controllers/userContents.js'
 const router = express.Router();
 
-router.post("/user-content", createUser);
+router.post("/user-content",auth, createUser);
 router.get("/all-users-contents", getAllUserContents);
 router.get("/user-content/:id", getSingleUserContent);
 router.get("/users-own-content/:id", getContentsByUser);
