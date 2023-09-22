@@ -1,24 +1,98 @@
-import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import mongoose, { Document, Model, Schema } from "mongoose";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+const emailRegexPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRegexPattern = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/;
+dotenv.config();
 
-const userSchema = mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
-    userName: { type: String, required: true, unique: true, },
-    email: { type: String, unique: true, required: true },
-    subscribers: { type: Number, default: 0 },
-    subscribed: { type: Number, default: 0 },
-    unSubscribed: { type: Number, default: 0 },
-    password: { type: String },
-    phone: { type: Number },
-    country: { type: String },
-    date: { type: Date, default: new Date() },
+    name: { type: String },
+    code: { type: String },
+    email: {
+      type: String,
+      unique: true,
+      validate: {
+        validator: function (value) {
+          return emailRegexPattern.test(value); // Use the email regex pattern
+        },
+        message: "Please enter a valid email.",
+      },
+    },
+    password: {
+      type: String,
+      validate: {
+        validator: function (value) {
+          return passwordRegexPattern.test(value); // Use the password regex pattern
+        },
+        message:
+          "Please enter a valid password (8 characters long with both letters and numbers)",
+      },
+      select: false,
+    },
+    // seller
+    product:{type:String},
+    images:{type:Array},
+    county:{type:String},
+    street:{type:String},
+    road:{type:String},
+    houseNo:{type:String},
+    tell:{type:String},
+    avatar: {
+      type:String
+    },
+    role: { type: String, default: "user" },
+    
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    isSeller: { type: Boolean,default:false },
 
-    img: { type: String },
-    isAdmin: { type: Boolean, default: false },
-    googleId: { type: String, required: false },
+    purchasedItems: [{ itemId: String }],
+    creationTime: { type: Date, default: Date.now },
+    minutesFromCreation: { type: Number, default: 0 },
   },
-
   { timestamps: true }
 );
 
-export default mongoose.model("Auth", userSchema);
+// userSchema.pre("save", async function (next) {
+//   if (!this.isModified("password")) {
+//     return next();
+//   }
+//   try {
+//     const salt = await bcrypt.genSalt(10);
+//     const hashedPassword = await bcrypt.hash(this.password, salt);
+//     this.password = hashedPassword;
+//     next();
+//   } catch (error) {
+//     return next(error);
+//   }
+// });
+// access token
+// userSchema.methods.signAccessToken = function () {
+//   // Generate and return an access token using jwt.sign()
+//   const accessToken = jwt.sign({ userId: this._id }, process.env.ACCESS_TOKEN, { expiresIn: '5d' });
+//   return accessToken;
+// };
+
+// userSchema.methods.signRefreshToken = function () {
+//   // Generate and return a refresh token using jwt.sign()
+//   const refreshToken = jwt.sign({ userId: this._id }, process.env.REFRESH_TOKEN, { expiresIn: '7d' });
+//   return refreshToken;
+// };
+// userSchema.methods.comparePassword = async function (meteredPassword) {
+//   return await bcrypt.compare(meteredPassword, this.password);
+// };
+
+// userSchema.methods.calculateMinutesFromCreation = async function () {
+//   const currentTime = new Date();
+//   const minutesFromCreation = Math.floor(
+//     (currentTime - this.creationTime) / (1000 * 60)
+//   );
+//   this.minutesFromCreation = minutesFromCreation;
+//   await this.save();
+// };
+
+export default mongoose.model("Users", userSchema);

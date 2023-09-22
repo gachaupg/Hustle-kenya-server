@@ -4,23 +4,37 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import userRouter from "./routes/auth.js";
-import userContentsRouter from "./routes/userContents.js";
+import authRoute from "./routes/authSocial.js";
+import userContentsRouter from "./routes/Products.js";
+import commentsRouter from "./routes/Products.js";
+import podicastRouter from "./routes/scripts.js";
+import messageRouter from "./routes/message.js";
+import chatRouter from "./routes/chats.js";
 import bodyParser from "body-parser";
+import passportSetup from "passport";
+import  cookieSession from "cookie-session";
 
 // cross origin options
-
+import  passport from "passport";
+const app = express();
 const corsOptions = {
-  origin: "*",
+  origin: "http://localhost:5173",
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
+app.use(
+  cookieSession({ name: "session", keys: ["lama"], maxAge: 24 * 60 * 60 * 100 })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // port 
 const PORT = process.env.PORT;
 
 // middlewares
 
-const app = express();
+
 app.set("view engine", "ejs");
 dotenv.config();
 app.use(morgan("dev"));
@@ -37,10 +51,13 @@ app.get("/", (req, res) => {
 });
 
 // all apis
-
+app.use("/auth", authRoute);
 app.use("/users", userRouter);
-app.use('/content',userContentsRouter)
-
+app.use('/products',userContentsRouter)
+app.use('/comments', commentsRouter)
+app.use('/scripts', podicastRouter)
+app.use('/chat', chatRouter)
+app.use('/message', messageRouter)
 // mongo db  conecctions
 
 mongoose

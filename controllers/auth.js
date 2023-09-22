@@ -1,17 +1,197 @@
-import bcrypt from "bcryptjs";
+// import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import UserModal from "../models/auth.js";
 import nodemailer from "nodemailer";
 import cloudinary from "../utils/cloudinary.js";
 
-// jwt secret for token 
+// jwt secret for token
 
 const secret =
   "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
 
 // login api
+// Import necessary modules and dependencies
+import userModel from "../models/auth.js";
+// import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import ejs from "ejs";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+import sendMail from "../utils/SendMail.js";
+import {
+  accessTokenOptions,
+  refreshTokenOptions,
+  sendToken,
+} from "../utils/jwt.js";
+// import redis from "../redis.js";
+// import { getUserById } from "./userServices.js";
+import bcrypt from "bcrypt";
 
+// Load environment variables
+dotenv.config();
+
+// Register a user
+export const registerUser = async (req, res, next) => {
+  const { email, password, phone,avatar, name,userName,date,subscribers,subscribed,unSubscribed, isAdmin, img, country } = req.body;
+  try {
+    const oldUser = await UserModal.findOne({ email });
+
+    if (oldUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    // if (img) {
+    //   const uploadedResponse = await cloudinary.uploader.upload(img, {
+    //     upload_preset: "peter-main",
+    //   });
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const result = await UserModal.create({
+      email,
+      unSubscribed,
+      avatar,
+      subscribers,
+      subscribed,
+      userName,
+      password: hashedPassword,
+      name,
+      isAdmin,
+      img,
+      phone,
+      country,
+      date,
+    });
+
+    const token = jwt.sign(
+      {
+        phone: result.phone,
+        email: result.email,
+        country: result.country,
+        img: result.img,
+        id: result._id,
+        isAdmin: result.isAdmin,
+      },
+      secret,
+      {
+        expiresIn: "1h",
+      }
+    );
+    res.status(201).json({ result, token });
+    // }
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+    console.log(error);
+  }
+
+
+
+  
+  // try {
+  //   const { name, email, code, password } = req.body;
+  //   const oldUser = await userModel.findOne({ email });
+  //   if (oldUser) {
+  //     return res
+  //       .status(500)
+  //       .json({ status: 500, message: "User with that email already exists" });
+  //   }
+  //   const user = {
+  //     name,
+  //     email,
+  //     password,
+  //     code,
+  //   };
+
+  //   const activationToken = createActivationToken(user);
+
+  //   const activationCode = activationToken.activationCode;
+  //   const data = { user: { name: user.name }, activationCode };
+
+  //   const currentModuleURL = import.meta.url;
+  //   const currentModulePath = fileURLToPath(currentModuleURL);
+  //   const currentDir = dirname(currentModulePath);
+
+  //   // Specify the correct template name here
+  //   const template = "Mail.ejs"; // Replace with your actual template file name
+
+  //   const html = await ejs.renderFile(
+  //     path.join(currentDir, "../mails", template), // Update the path to the template
+  //     data
+  //   );
+  //   try {
+  //     await sendMail({
+  //       email: user.email,
+  //       to: user.email, // This should be the recipient's email address
+  //       subject: "Activate account",
+  //       template: "Mail.ejs",
+  //       data,
+  //     });
+
+  //     res.status(200).json({
+  //       status: true,
+  //       message: `Please check your email ${user.email} to activate your account`,
+  //       activationToken: activationToken.token,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     return next(new Error(error.message));
+  //   }
+  // } catch (error) {
+  //   console.error(error);
+  //   return next(new Error(error.message));
+  // }
+};
+// Create activation token
+export const createActivationToken = (user) => {
+  const activationCode = `${Math.floor(
+    1000 + Math.random() * 9000
+  ).toString()}`;
+  const token = jwt.sign(
+    {
+      user,
+      activationCode,
+    },
+    process.env.ACTIVATION_SECRET,
+    {
+      expiresIn: "100m",
+    }
+  );
+  return { token, activationCode };
+};
+
+// Activate user
+export const activateUser = async (req, res, next) => {
+  try {
+    const { activation_token, activation_code } = req.body;
+    const newUser = jwt.verify(activation_token, process.env.ACTIVATION_SECRET);
+
+    if (newUser.activationCode !== activation_code) {
+      return res.status(400).json({ message: "Invalid activation token" });
+    }
+
+    const { name, email, password } = newUser.user;
+    console.log(password);
+    const oldUser = await userModel.findOne({ email });
+
+    if (oldUser) {
+      return res.status(500).json({
+        status: 500,
+        message: "User with that email address already exists",
+      });
+    }
+
+    // Ensure that the 'password' field is set correctly
+    const user = await userModel.create({
+      name,
+      email,
+      password,
+    });
+    return res.status(201).json(user);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 export const signin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -39,7 +219,20 @@ export const signin = async (req, res) => {
 // register api 'users must use their original emails
 
 export const signup = async (req, res) => {
-  const { email, password, phone, name,userName,date,subscribers,subscribed,unSubscribed, isAdmin, img, country } = req.body;
+  const {
+    email,
+    password,
+    phone,
+    name,
+    userName,
+    date,
+    subscribers,
+    subscribed,
+    unSubscribed,
+    isAdmin,
+    img,
+    country,
+  } = req.body;
   try {
     const oldUser = await UserModal.findOne({ email });
 
@@ -82,14 +275,36 @@ export const signup = async (req, res) => {
         expiresIn: "1h",
       }
     );
-    res.status(201).json({ result, token });
+    res.status(201).json({ zz });
     // }
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
     console.log(error);
   }
 };
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
 
+  try {
+    const oldUser = await UserModal.findOne({ email });
+    if (!oldUser)
+      return res.status(404).json({ message: "User doesn't exist" });
+
+      // const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
+    // if (!isPasswordCorrect)  return res.status(400).json({ message: "Invalid credentials" });
+
+    
+
+    const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ result: oldUser, token });
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong" });
+    console.log(error);
+  }
+};
 // googleSignIn api
 
 export const googleSignIn = async (req, res) => {
@@ -154,7 +369,7 @@ export const deleteUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, country, password, img, phone } = req.body;
+  const { name, email, country, password, avator, phone } = req.body;
   try {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: `No user exist with id: ${id}` });
@@ -165,7 +380,7 @@ export const updateUser = async (req, res) => {
       email,
       country,
       password,
-      img,
+      avator,
       name,
       _id: id,
     };
@@ -175,7 +390,32 @@ export const updateUser = async (req, res) => {
     res.status(404).json({ message: "Something went wrong" });
   }
 };
+export const updateSeller = async (req, res) => {
+  const { id } = req.params;
+  const { product, images, county, street, isSeller, road, houseNo, tell } =
+    req.body;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ message: `No user exist with id: ${id}` });
+    }
 
+    const updateduser = {
+      product,
+      images,
+      county,
+      street,
+      road,
+      houseNo,
+      tell,
+      isSeller: true,
+      _id: id,
+    };
+    await UserModal.findByIdAndUpdate(id, updateduser, { new: true });
+    res.json(updateduser);
+  } catch (error) {
+    res.status(404).json({ message: "Something went wrong" });
+  }
+};
 // forgotPassword api
 
 export const forgotPassword = async (req, res) => {
@@ -198,15 +438,15 @@ export const forgotPassword = async (req, res) => {
       secure: false,
       port: 587,
       auth: {
-        user: "petergachau57@gmail.com",
-        pass: "atgwlwufhipufmte",
+        user: "worldofhustles@gmail.com",
+        pass: "tewcczqvepiskpbm",
       },
       tls: {
         rejectUnauthorized: false,
       },
     });
     var mailOptions = {
-      from: "petergachau57@gmail.com",
+      from: "worldofhustles@gmail.com",
       to: email,
       subject: "reset password",
       text: link,
@@ -226,7 +466,7 @@ export const forgotPassword = async (req, res) => {
       }
     });
 
-    res.send("success");
+    res.status(201).json({ message: "password reset link sent to your email" });
   } catch (error) {}
 };
 
@@ -277,54 +517,3 @@ export const postResetPassword = async (req, res) => {
     res.json({ status: "Not Verified" });
   }
 };
-
-// export const getToursByTag = async (req, res) => {
-//   const { apartment } = req.params;
-//   try {
-//     const tours = await UserModal.find({ apartment: { $in: apartment } });
-//     res.json(tours);
-//   } catch (error) {
-//     res.status(404).json({ message: "Something went wrong" });
-//   }
-// };
-
-// export const getRelatedTours = async (req, res) => {
-//   const tags = req.body;
-//   try {
-//     const tours = await UserModal.find({ tags: { $in: tags } });
-//     res.json(tours);
-//   } catch (error) {
-//     res.status(404).json({ message: "Something went wrong" });
-//   }
-// };
-
-// export const likeTour = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     if (!req.userId) {
-//       return res.json({ message: "User is not authenticated" });
-//     }
-
-//     if (!mongoose.Types.ObjectId.isValid(id)) {
-//       return res.status(404).json({ message: `No tour exist with id: ${id}` });
-//     }
-
-//     const tour = await UserModal.findById(id);
-
-//     const index = tour.likes.findIndex((id) => id === String(req.userId));
-
-//     if (index === -1) {
-//       tour.likes.push(req.userId);
-//     } else {
-//       tour.likes = tour.likes.filter((id) => id !== String(req.userId));
-//     }
-
-//     const updatedTour = await UserModal.findByIdAndUpdate(id, tour, {
-//       new: true,
-//     });
-
-//     res.status(200).json(updatedTour);
-//   } catch (error) {
-//     res.status(404).json({ message: error.message });
-//   }
-// };
