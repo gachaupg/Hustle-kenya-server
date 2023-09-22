@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/", createPodicast);
 router.get("/all-podicasts", getAllPodicasts);
 router.get("/", RandomProducts);
-router.get("/user-podicast/:id", getSinglePodicast);
+router.get("/:id", getSinglePodicast);
 router.get("/users-podicasts/:id", getPodicastByUser);
 router.delete("/delete-podicast/:id", deletePodicast);
 router.patch("/update-podicast/:id", updatePodicast);
