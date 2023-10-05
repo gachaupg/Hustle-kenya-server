@@ -18,16 +18,12 @@ import  cookieSession from "cookie-session";
 import  passport from "passport";
 const app = express();
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "*",
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
-app.use(
-  cookieSession({ name: "session", keys: ["lama"], maxAge: 24 * 60 * 60 * 100 })
-);
 
-app.use(passport.initialize());
-app.use(passport.session());
+
 
 // port 
 const PORT = process.env.PORT;
@@ -51,7 +47,6 @@ app.get("/", (req, res) => {
 });
 
 // all apis
-app.use("/auth", authRoute);
 app.use("/users", userRouter);
 app.use('/products',userContentsRouter)
 app.use('/comments', commentsRouter)

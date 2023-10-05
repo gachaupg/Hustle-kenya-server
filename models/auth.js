@@ -8,6 +8,11 @@ dotenv.config();
 
 const userSchema = new mongoose.Schema(
   {
+    profilePicture: {
+      type: String,
+      default:
+        'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg',
+    },
     name: { type: String },
     code: { type: String },
     email: {
@@ -32,11 +37,16 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
     // seller
-    product:{type:String},
+    title:{type:String},
+    size:{type:String},
+    twitter:{type:String},
+    Ig:{type:String},
+    desc:{type:String},
     images:{type:Array},
     county:{type:String},
     street:{type:String},
     road:{type:String},
+    phone:{type:Number},
     houseNo:{type:String},
     tell:{type:String},
     avatar: {
@@ -95,4 +105,4 @@ const userSchema = new mongoose.Schema(
 //   await this.save();
 // };
 
-export default mongoose.model("Users", userSchema);
+export default mongoose.model("User", userSchema);

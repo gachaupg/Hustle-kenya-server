@@ -1,19 +1,13 @@
-// import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import UserModal from "../models/auth.js";
 import nodemailer from "nodemailer";
 import cloudinary from "../utils/cloudinary.js";
 
-// jwt secret for token
-
 const secret =
   "hvdvay6ert72839289()aiyg8t87qt72393293883uhefiuh78ttq3ifi78272jbkj?[]]pou89ywe";
-
-// login api
-// Import necessary modules and dependencies
 import userModel from "../models/auth.js";
-// import jwt from "jsonwebtoken";
+
 import dotenv from "dotenv";
 import ejs from "ejs";
 import path, { dirname } from "path";
@@ -24,8 +18,7 @@ import {
   refreshTokenOptions,
   sendToken,
 } from "../utils/jwt.js";
-// import redis from "../redis.js";
-// import { getUserById } from "./userServices.js";
+
 import bcrypt from "bcrypt";
 
 // Load environment variables
@@ -33,7 +26,21 @@ dotenv.config();
 
 // Register a user
 export const registerUser = async (req, res, next) => {
-  const { email, password, phone,avatar, name,userName,date,subscribers,subscribed,unSubscribed, isAdmin, img, country } = req.body;
+  const {
+    email,
+    password,
+    phone,
+    avatar,
+    name,
+    userName,
+    date,
+    subscribers,
+    subscribed,
+    unSubscribed,
+    isAdmin,
+    img,
+    country,
+  } = req.body;
   try {
     const oldUser = await UserModal.findOne({ email });
 
@@ -84,9 +91,6 @@ export const registerUser = async (req, res, next) => {
     console.log(error);
   }
 
-
-
-  
   // try {
   //   const { name, email, code, password } = req.body;
   //   const oldUser = await userModel.findOne({ email });
@@ -290,10 +294,8 @@ export const loginUser = async (req, res) => {
     if (!oldUser)
       return res.status(404).json({ message: "User doesn't exist" });
 
-      // const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
+    // const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
     // if (!isPasswordCorrect)  return res.status(400).json({ message: "Invalid credentials" });
-
-    
 
     const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, {
       expiresIn: "1h",
@@ -307,27 +309,94 @@ export const loginUser = async (req, res) => {
 };
 // googleSignIn api
 
-export const googleSignIn = async (req, res) => {
-  const { email, name, token, googleId } = req.body;
-
+export const googleSignIn = async (req, res, next) => {
   try {
-    const oldUser = await UserModal.findOne({ email });
-    if (oldUser) {
-      const result = { _id: oldUser._id.toString(), email, name };
-      return res.status(200).json({ result, token });
+    const user = await UserModal.findOne({ email: req.body.email });
+
+    if (user) {
+      // User already exists, generate a token and send it back
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const { password: hashedPassword, ...rest } = user._doc;
+
+      const expiryDate = new Date(Date.now() + 3600000); // 1 hour
+
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          expires: expiryDate,
+        })
+        .status(200)
+        .json(rest);
+    } else {
+      // User doesn't exist, create a new user and generate a token
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8);
+      const hashedPassword = bcrypt.hashSync(generatedPassword, 10);
+
+      const newUser = new UserModal({
+        name:
+          req.body.name.split(" ").join("").toLowerCase() +
+          Math.random().toString(36).slice(-8),
+        email: req.body.email,
+        password: hashedPassword,
+        profilePicture: req.body.photo,
+      });
+
+      const result = await UserModal.create({
+        email: req.body.email,
+        name: newUser.name,
+        // Add other properties from newUser that you want to save
+      });
+
+      const token = jwt.sign(
+        {
+          phone: result.phone,
+          email: result.email,
+          profilePicture: req.body.photo,
+
+          id: result._id,
+          isAdmin: result.isAdmin,
+        },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: "1h",
+        }
+      );
+
+      const { password: hashedPassword2, ...rest } = result._doc;
+
+      const expiryDate = new Date(Date.now() + 3600000); // 1 hour
+
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          expires: expiryDate,
+        })
+        .status(201)
+        .json(rest);
     }
-
-    const result = await UserModal.create({
-      email,
-      name,
-      googleId,
-    });
-
-    res.status(200).json({ result, token });
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong" });
-    console.log(error);
+    next(error);
   }
+};
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await UserModal.find({ _id: { $ne: req.params.id } }).select([
+      "email",
+      "name",
+      "profilePicture",
+      "avatar",
+      "_id",
+    ]);
+    return res.json(users);
+  } catch (ex) {
+    next(ex);
+  }
+};
+
+export const signout = (req, res) => {
+  res.clearCookie("access_token").status(200).json("Signout success!");
 };
 
 // get all Users  api
@@ -392,21 +461,37 @@ export const updateUser = async (req, res) => {
 };
 export const updateSeller = async (req, res) => {
   const { id } = req.params;
-  const { product, images, county, street, isSeller, road, houseNo, tell } =
-    req.body;
+  const {
+    
+    images,
+    county,
+    street,
+    title,
+    desc,
+    Ig,
+    twitter,
+    size,
+    road,
+    houseNo,
+    tell,
+  } = req.body;
   try {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: `No user exist with id: ${id}` });
     }
 
     const updateduser = {
-      product,
+      title,
       images,
       county,
       street,
       road,
       houseNo,
       tell,
+      desc,
+      Ig,
+      twitter,
+      size,
       isSeller: true,
       _id: id,
     };

@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Types;
 const PodicastSchema = mongoose.Schema({
   title: { type: String, },
   userName: { type: String },
-  cover: { type: String },
+  cover: { type: Array },
   script: { type: String },
 
   likes:[{type:ObjectId,ref:"Auth"}],

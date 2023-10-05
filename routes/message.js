@@ -1,10 +1,10 @@
 import express from "express";
-import { createMessage, getMessages } from "../controllers/message.js";
+import { addMessage, getMessages } from "../controllers/message.js";
 
 const router = express.Router();
 
-router.post("/", createMessage);
-router.get("/:chatId", getMessages);
+router.post("/", addMessage);
+router.get("/",getMessages );
 
 
 

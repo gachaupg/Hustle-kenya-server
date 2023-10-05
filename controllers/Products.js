@@ -23,7 +23,7 @@ export const createUser = async (req, res) => {
 
 export const RandomProducts = async (req, res) => {
   try {
-    const numProductsToFetch = 10;
+    const numProductsToFetch = 14;
     let randomProducts = [];
     const count = await userContents.countDocuments();
 
