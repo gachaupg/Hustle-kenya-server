@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 const { ObjectId } = mongoose.Types;
 
 const PodicastSchema = mongoose.Schema({
-  userId: { type: String, },
+  userId: { type: String,default:'2' },
   userName: { type: String },
   email: { type: String },
   script: { type: String },
@@ -13,7 +13,7 @@ const PodicastSchema = mongoose.Schema({
   category: { type: String },
   description: { type: String },
  
-  creator: { type: String },
+  owner: { type: String },
   age: { type: String },
 
   tell: { type: String },

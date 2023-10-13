@@ -8,25 +8,13 @@ export const createOrder = async (req, res) => {
   const newUserContent = new userContents({
     ...userData,
     createdAt: new Date().toISOString(),
+    date: new Date(), // Set the upload time to the current time
   });
 
   try {
     await newUserContent.save();
     res.status(201).json(newUserContent);
-
-
-const notifications=await Notifications.create({
-    userId:'1',
-    title:'New order',
-    message:'new order'
-})
-res.status(201).json({
-    success:true,
-    notifications
-   
-})
   } catch (error) {
-    console.log(error);
     res.status(404).json({ message: "ooops !! Data not found" });
   }
 };
@@ -169,7 +157,7 @@ export const getOrderByUser = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ message: "User doesn't exist" });
   }
-  const userTours = await userContents.find({ creator: id });
+  const userTours = await userContents.find({ userId: id });
   res.status(200).json(userTours);
 };
 

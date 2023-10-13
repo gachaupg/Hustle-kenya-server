@@ -1,12 +1,12 @@
-import userContent from "../models/userContent.js";
 // const {auth,isUser,isAdmin}=require('../middleware/auth')
 import moment from "moment";
-import express from "express";
+import express, { Router } from "express";
+import userContent from "../models/Products.js";
 const router = express.Router();
 
 
 
-router.get ('/football',  async (req,res)=>{
+router.get ('/electronics',  async (req,res)=>{
     const previosMonth=moment()
     .month(moment().month()-1)
     .set('date',1)
@@ -14,7 +14,7 @@ router.get ('/football',  async (req,res)=>{
     // res.status(200).send(previosMonth)
     try {
         const users= await userContent.aggregate([
-            {$match:{category:'football'},
+            {$match:{category:'Electronics'},
         
         }
        
@@ -120,3 +120,5 @@ router.get ('/comedy',  async (req,res)=>{
         res.status(500).send(error)
     }
 })
+
+export default router

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import userRouter from "./routes/auth.js";
 import authRoute from "./routes/authSocial.js";
+import categoryRouter from "./routes/Categories.js";
 import userContentsRouter from "./routes/Products.js";
 import commentsRouter from "./routes/Products.js";
 import podicastRouter from "./routes/scripts.js";
@@ -57,6 +58,7 @@ app.use('/chat', chatRouter)
 app.use('/message', messageRouter)
 app.use('/orders', orderRouter)
 app.use('/notifications', notRouter)
+app.use('/categories', categoryRouter)
 // mongo db  conecctions
 
 mongoose
