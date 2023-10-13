@@ -10,7 +10,6 @@ export const createUser = async (req, res) => {
     ...userData,
     createdAt: new Date().toISOString(),
     date: new Date(), // Set the upload time to the current time
-
   });
 
   try {
@@ -30,7 +29,10 @@ export const RandomProducts = async (req, res) => {
     while (randomProducts.length < numProductsToFetch) {
       const randomIndex = Math.floor(Math.random() * count);
 
-      const products = await userContents.find().skip(randomIndex).limit(numProductsToFetch);
+      const products = await userContents
+        .find()
+        .skip(randomIndex)
+        .limit(numProductsToFetch);
 
       randomProducts = randomProducts.concat(products);
     }
@@ -41,16 +43,9 @@ export const RandomProducts = async (req, res) => {
     res.json(randomProducts);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
-
-
-
-
 
 export const Addlikes = async (req, res) => {
   const { id } = req.params;
@@ -258,15 +253,19 @@ export const viewsUserContent = async (req, res) => {
 
   try {
     const updatedVideo = await userContents.findOneAndUpdate(
-      { _id: videoId, 'views.ipAddress': { $ne: userIP } },
+      { _id: videoId, "views.ipAddress": { $ne: userIP } },
       { $push: { views: { ipAddress: userIP } }, $inc: { viewCount: 1 } },
       { new: true }
     );
 
     if (updatedVideo) {
-      const playlist = updatedVideo.playlists.find(playlist => playlist.name === 'Watched Videos');
+      const playlist = updatedVideo.playlists.find(
+        (playlist) => playlist.name === "Watched Videos"
+      );
       if (playlist) {
-        const existingVideoIndex = playlist.videos.findIndex(video => video._id.equals(videoId));
+        const existingVideoIndex = playlist.videos.findIndex((video) =>
+          video._id.equals(videoId)
+        );
         if (existingVideoIndex === -1) {
           playlist.videos.push(updatedVideo);
           await updatedVideo.save();
@@ -275,47 +274,47 @@ export const viewsUserContent = async (req, res) => {
     }
 
     res.status(200).json(updatedVideo);
-
   } catch (error) {
-    console.error('Error updating view count:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error updating view count:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 export const UserContentPlayList = async (req, res) => {
   const { videoId } = req.params;
   const userIP = req.ip; // Get user's IP address
 
   try {
-    console.log('Request received. Video ID:', videoId, 'IP Address:', userIP);
+    console.log("Request received. Video ID:", videoId, "IP Address:", userIP);
 
     const updatedVideo = {
       _id: videoId,
       ipAddress: userIP,
     };
 
-    console.log('Updating playlist for user with IP:', userIP);
+    console.log("Updating playlist for user with IP:", userIP);
 
     // Update the user's playlist
-    const user = await userContents.findOne({ 'views.ipAddress': userIP });
-    console.log('Retrieved user from database:', user);
+    const user = await userContents.findOne({ "views.ipAddress": userIP });
+    console.log("Retrieved user from database:", user);
 
     if (user) {
-      const playlist = user.playlists.find(playlist => playlist.name === 'Watched Videos');
-      console.log('Playlist:', playlist);
+      const playlist = user.playlists.find(
+        (playlist) => playlist.name === "Watched Videos"
+      );
+      console.log("Playlist:", playlist);
 
       if (playlist) {
         playlist.videos.push(updatedVideo._id);
         await user.save();
-        console.log('Playlist updated.');
+        console.log("Playlist updated.");
       }
     }
 
     res.status(200).json(user);
   } catch (error) {
-    console.error('Error updating playlist:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error updating playlist:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -358,5 +357,73 @@ export const updateUserContent = async (req, res) => {
     res.json(updateduser);
   } catch (error) {
     res.status(404).json({ message: "ooops !! Data not found" });
+  }
+};
+
+export const Questions = async (req, res, next) => {
+  try {
+    const { comment, commentRepries, productId, commentId } = req.body;
+
+    // Check if the product ID is valid
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(404)
+        .json({ message: `No product exists with id: ${productId}` });
+    }
+
+    const product = await userContents.findById(productId);
+
+    // Check if the comment ID already exists
+    // const productsData = product?.comments?.find((item) => item._id === commentId);
+    // if (productsData) {
+    //   return res.status(404).json({ message: `Comment already exists with id: ${commentId}` });
+    // }
+
+    const newQuestion = {
+      user: req.UserModal,
+      comment,
+      commentRepries,
+      productId,
+    };
+
+    // Add the new question to the product's comments array
+    product.comments.push(newQuestion);
+
+    // Save the updated product to the database
+    await product.save();
+
+    // Success response
+    res.status(200).json({ message: "Question added successfully", product });
+  } catch (error) {
+    // Error response
+    res.status(500).json({ message: "Oops! Data not found" });
+  }
+};
+
+export const addReview = async (req, res, next) => {
+  const { userId, review, rating, name } = req.body;
+  const { id } = req.params;
+  try {
+    // Find the product by id
+    const product = await userContents.findById(id);
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ message: `No product exists with id: ${id}` });
+    }
+
+    // Add a new review to the reviews array
+    product.reviews.push({ userId, review, rating, name });
+    console.log(product.reviews);
+    // Save the updated product to the database
+    await product.save();
+
+    // Success response with the updated product
+    res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+    // Handle errors, for now, sending a generic error message
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };

@@ -9,6 +9,8 @@ import userContentsRouter from "./routes/Products.js";
 import commentsRouter from "./routes/Products.js";
 import podicastRouter from "./routes/scripts.js";
 import messageRouter from "./routes/message.js";
+import orderRouter from "./routes/orders.js";
+import notRouter from "./routes/notifications.js";
 import chatRouter from "./routes/chats.js";
 import bodyParser from "body-parser";
 import passportSetup from "passport";
@@ -43,7 +45,7 @@ app.use(cors(corsOptions));
 // welcome route
 
 app.get("/", (req, res) => {
-  res.send("hello andrew kibe app");
+  res.send("hello Hustles");
 });
 
 // all apis
@@ -53,6 +55,8 @@ app.use('/comments', commentsRouter)
 app.use('/scripts', podicastRouter)
 app.use('/chat', chatRouter)
 app.use('/message', messageRouter)
+app.use('/orders', orderRouter)
+app.use('/notifications', notRouter)
 // mongo db  conecctions
 
 mongoose
