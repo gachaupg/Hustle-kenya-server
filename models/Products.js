@@ -23,11 +23,14 @@ const userContentSchema = mongoose.Schema(
   {
     title: { type: String },
     userName: { type: String },
+    sellerName: { type: String },
+   
     video: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     likes: [{ type: ObjectId, ref: "User" }],
     dislikes: [{ type: ObjectId, ref: "User" }],
     comments: [],
+    email:{type:String},
     phone: { type: Number },
     description: { type: String },
     creator: { type: String },

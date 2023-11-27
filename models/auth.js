@@ -38,6 +38,16 @@ const userSchema = new mongoose.Schema(
     },
     // seller
     title:{type:String},
+    payemail:{type:String},
+    paytitle:{type:String},
+    amount:{type:Number},
+    payname:{type:String},
+    payuserid:{type:String},
+    trxref:{type:String},
+    message:{type:String},
+    status:{type:String},
+    hellp:{type:String},
+
     size:{type:String},
     twitter:{type:String},
     Ig:{type:String},

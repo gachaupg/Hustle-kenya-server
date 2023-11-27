@@ -1,5 +1,5 @@
 import Notifications from "../models/Notifications.js";
-import userContents from "../models/Orders.js";
+import userContents from "../models/payment.js";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 export const createOrder = async (req, res) => {

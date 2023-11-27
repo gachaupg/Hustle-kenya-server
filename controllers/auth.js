@@ -52,7 +52,11 @@ export const registerUser = async (req, res, next) => {
     //     upload_preset: "peter-main",
     //   });
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+    
+    const hashedPassword = await bcrypt?.hash(password, 12);
 
     const result = await UserModal.create({
       email,
@@ -462,9 +466,16 @@ export const updateUser = async (req, res) => {
 export const updateSeller = async (req, res) => {
   const { id } = req.params;
   const {
-    
+    payemail,
+    payname,
     images,
+    payuserid,
+    trxref,
+    message,
+    status,
+    amount,
     county,
+    paytitle,
     street,
     title,
     desc,
@@ -482,6 +493,7 @@ export const updateSeller = async (req, res) => {
 
     const updateduser = {
       title,
+      payemail,payname,paytitle,payuserid,amount,
       images,
       county,
       street,
@@ -491,6 +503,9 @@ export const updateSeller = async (req, res) => {
       desc,
       Ig,
       twitter,
+      trxref,
+message,
+status,
       size,
       isSeller: true,
       _id: id,

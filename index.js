@@ -16,7 +16,7 @@ import chatRouter from "./routes/chats.js";
 import bodyParser from "body-parser";
 import passportSetup from "passport";
 import  cookieSession from "cookie-session";
-
+import paymentRouter from "./routes/payment.js"
 // cross origin options
 import  passport from "passport";
 const app = express();
@@ -46,10 +46,10 @@ app.use(cors(corsOptions));
 // welcome route
 
 app.get("/", (req, res) => {
-  res.send("hello Hustles");
+  res.send("hello world of and   Hustles");
 });
 
-// all apis
+// all apis  app
 app.use("/users", userRouter);
 app.use('/products',userContentsRouter)
 app.use('/comments', commentsRouter)
@@ -60,7 +60,7 @@ app.use('/orders', orderRouter)
 app.use('/notifications', notRouter)
 app.use('/categories', categoryRouter)
 // mongo db  conecctions
-
+app.use("/pay",paymentRouter)
 mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
