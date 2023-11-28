@@ -19,33 +19,30 @@ export const createUser = async (req, res) => {
     res.status(404).json({ message: "ooops !! Data not found" });
   }
 };
-
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 export const RandomProducts = async (req, res) => {
   try {
-    const numProductsToFetch = 14;
-    let randomProducts = [];
-    const count = await userContents.countDocuments();
+    const allProducts = await userContents.find();
 
-    while (randomProducts.length < numProductsToFetch) {
-      const randomIndex = Math.floor(Math.random() * count);
+    // Shuffle the array to get random order
+    const shuffledProducts = shuffleArray(allProducts);
 
-      const products = await userContents
-        .find()
-        .skip(randomIndex)
-        .limit(numProductsToFetch);
-
-      randomProducts = randomProducts.concat(products);
-    }
-
-    // Slice the array to ensure it contains exactly 5 products
-    randomProducts = randomProducts.slice(0, numProductsToFetch);
-
-    res.json(randomProducts);
+    res.json(shuffledProducts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Function to shuffle an array
+
+
 
 export const Addlikes = async (req, res) => {
   const { id } = req.params;
