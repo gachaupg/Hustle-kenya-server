@@ -55,7 +55,7 @@ export const registerUser = async (req, res, next) => {
     if (!password) {
       return res.status(400).json({ message: "Password is required" });
     }
-    
+
     const hashedPassword = await bcrypt?.hash(password, 12);
 
     const result = await UserModal.create({
@@ -477,6 +477,7 @@ export const updateSeller = async (req, res) => {
     asImages,
     adVideos,
     adAmount,
+    adDesc,
     status,
     amount,
     county,
@@ -498,7 +499,7 @@ export const updateSeller = async (req, res) => {
 
     const updateduser = {
       title,
-      payemail,payname,paytitle,payuserid,amount,
+      payemail, payname, paytitle, payuserid, amount,
       images,
       county,
       street,
@@ -512,10 +513,11 @@ export const updateSeller = async (req, res) => {
       adTitle,
       adSize,
       asImages,
+      adDesc,
       adVideos,
       adAmount,
-message,
-status,
+      message,
+      status,
       size,
       isSeller: true,
       _id: id,
@@ -577,7 +579,7 @@ export const forgotPassword = async (req, res) => {
     });
 
     res.status(201).json({ message: "password reset link sent to your email" });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 // password reset ui html ejs

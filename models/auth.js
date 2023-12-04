@@ -49,6 +49,7 @@ const userSchema = new mongoose.Schema(
     hellp:{type:String},
     adTitle:{type:String},
     adSize:{type:String},
+    adDesc:{type:String},
     adAmount:{type:Number},
     adImages:{type:Array},
     adVideos:{type:Array},
