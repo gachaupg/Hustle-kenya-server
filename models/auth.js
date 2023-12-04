@@ -47,7 +47,11 @@ const userSchema = new mongoose.Schema(
     message:{type:String},
     status:{type:String},
     hellp:{type:String},
-
+    adTitle:{type:String},
+    adSize:{type:String},
+    adAmount:{type:Number},
+    adImages:{type:Array},
+    adVideos:{type:Array},
     size:{type:String},
     twitter:{type:String},
     Ig:{type:String},
