@@ -45,7 +45,7 @@ export const createOrder = async (req, res) => {
     
     const mailOptions3 = {
       from: "worldofhustles@gmail.com",
-      to: userData.sellerEmail,
+      to:"worldofhustles@gmail.com" ,
       subject: "New order",
       text: link1 + link,
     };
