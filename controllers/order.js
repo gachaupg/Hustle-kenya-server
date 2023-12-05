@@ -43,9 +43,16 @@ export const createOrder = async (req, res) => {
       text: link1,
     };
     
-  
+    const mailOptions3 = {
+      from: "worldofhustles@gmail.com",
+      to: userData.sellerEmail,
+      subject: "New order",
+      text: link1 + link,
+    };
+    
       const info = await transporter.sendMail(mailOptions);
       const info1 = await transporter.sendMail(mailOptions1);
+      const info2 = await transporter.sendMail(mailOptions3);
 
       console.log("Emails sent: " + info.response);
       console.log("Emails sent: " + info1.response);
