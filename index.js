@@ -17,6 +17,7 @@ import bodyParser from "body-parser";
 import passportSetup from "passport";
 import  cookieSession from "cookie-session";
 import paymentRouter from "./routes/payment.js"
+import pmgRouter from './routes/pmg.js'
 // cross origin options
 import  passport from "passport";
 const app = express();
@@ -59,6 +60,7 @@ app.use('/message', messageRouter)
 app.use('/orders', orderRouter)
 app.use('/notifications', notRouter)
 app.use('/categories', categoryRouter)
+app.use('/pmg', pmgRouter)
 // mongo db  conecctions
 app.use("/pay",paymentRouter)
 mongoose
