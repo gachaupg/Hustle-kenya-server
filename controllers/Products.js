@@ -276,7 +276,89 @@ export const viewsUserContent = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+export const updateBought = async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ message: `No user exist with id: ${id}` });
+    }
 
+    const updateduser = {
+      
+      isBought: true,
+      _id: id,
+    };
+    await UserModal.findByIdAndUpdate(id, updateduser, { new: true });
+    res.json(updateduser);
+  } catch (error) {
+    res.status(404).json({ message: "Something went wrong" });
+  }
+};
+export const updateProducts = async (req, res) => {
+  const { id } = req.params;
+  const {
+    title,
+    phone,
+    description,
+    category,
+    twitter,
+    images,
+    remarks,
+    tell,
+    price,
+    age,
+    stock,
+    whatsapp,
+    brand,
+    feature,
+    feature1,
+    feature2,
+    feature3,
+    feature4,
+    specifications,
+    specifications1,
+    specifications2,
+    specifications3,
+    specifications4,
+  } = req.body;
+  try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({ message: `No user exist with id: ${id}` });
+    }
+
+    const updateduser = {
+      title,
+    phone,
+    description,
+    category,
+    twitter,
+    images,
+    remarks,
+    tell,
+    price,
+    age,
+    stock,
+    whatsapp,
+    brand,
+    feature,
+    feature1,
+    feature2,
+    feature3,
+    feature4,
+    specifications,
+    specifications1,
+    specifications2,
+    specifications3,
+    specifications4,
+      _id: id,
+    };
+    await UserModal.findByIdAndUpdate(id, updateduser, { new: true });
+    res.json(updateduser);
+  } catch (error) {
+    res.status(404).json({ message: "Something went wrong" });
+  }
+};
 export const UserContentPlayList = async (req, res) => {
   const { videoId } = req.params;
   const userIP = req.ip; // Get user's IP address

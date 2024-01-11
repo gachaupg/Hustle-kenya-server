@@ -24,7 +24,7 @@ const userContentSchema = mongoose.Schema(
     title: { type: String },
     userName: { type: String },
     sellerName: { type: String },
-   
+   isBought:{type:Boolean,default:false},
     video: { type: String },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     likes: [{ type: ObjectId, ref: "User" }],

@@ -1,6 +1,6 @@
 import express from "express";
 import  { createUser,RemoveLike,Addlikes,Adddislikes,RemovedisLike, 
-    deleteUserContent, getAllUserContents, getContentsByUser, getSingleUserContent, updateUserContent, Addsubscribers, Addissubscribers, Removesubscriber, Removedissubscriber, viewsUserContent, UserContentPlayList, RandomProducts, Questions, addReview } from '../controllers/Products.js'
+    deleteUserContent, getAllUserContents, getContentsByUser, getSingleUserContent, updateUserContent, Addsubscribers, Addissubscribers, Removesubscriber, Removedissubscriber, viewsUserContent, UserContentPlayList, RandomProducts, Questions, addReview, updateBought, updateProducts } from '../controllers/Products.js'
 import auth from "../middleware/auth.js";
 const router = express.Router();
 
@@ -17,6 +17,8 @@ router.patch("/user-contentdislikes/:id",Adddislikes);
 router.patch("/user-contentremovedislikes/:id",RemovedisLike);
 router.patch("/user-contentsubscribers/:id",Addsubscribers);
 router.patch("/user-contentremovesubscribers/:id",Removesubscriber);
+router.patch("/update-products/:id",updateProducts);
+router.patch("/update-bought/:id",updateBought);
 router.patch("/user-contentremovedissubscribers/:id",Removedissubscriber);
 router.patch("/user-contentdissubscriber/:id",Addissubscribers);
 router.put('/views/:videoId', viewsUserContent);
