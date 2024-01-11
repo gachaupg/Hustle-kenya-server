@@ -39,6 +39,8 @@ const userSchema = new mongoose.Schema(
     // seller
     title:{type:String},
     payemail:{type:String},
+    isBought:{type:Boolean,default:false},
+
     paytitle:{type:String},
     amount:{type:Number},
     payname:{type:String},

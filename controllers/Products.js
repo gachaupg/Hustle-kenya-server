@@ -277,7 +277,7 @@ export const viewsUserContent = async (req, res) => {
   }
 };
 export const updateBought = async (req, res) => {
-  const { id } = req.params;
+  const { id ,test} = req.params;
   
   try {
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -288,8 +288,9 @@ export const updateBought = async (req, res) => {
       
       isBought: true,
       _id: id,
+      test,
     };
-    await UserModal.findByIdAndUpdate(id, updateduser, { new: true });
+    await userContents.findByIdAndUpdate(id, updateduser, { new: true });
     res.json(updateduser);
   } catch (error) {
     res.status(404).json({ message: "Something went wrong" });

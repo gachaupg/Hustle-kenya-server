@@ -21,6 +21,7 @@ const reviewSchema = new mongoose.Schema({
 })
 const userContentSchema = mongoose.Schema(
   {
+    test:{type:String,default:'hello'},
     title: { type: String },
     userName: { type: String },
     sellerName: { type: String },
