@@ -485,7 +485,7 @@ export const updateSeller = async (req, res) => {
     street,
     title,
     desc,
-    Ig,
+    
     twitter,
     size,
     road,
@@ -507,7 +507,7 @@ export const updateSeller = async (req, res) => {
       houseNo,
       tell,
       desc,
-      Ig,
+      Ig:new Date(),
       twitter,
       trxref,
       adTitle,
@@ -520,6 +520,7 @@ export const updateSeller = async (req, res) => {
       status,
       size,
       isSeller: true,
+      updatedAt: new Date(),
       _id: id,
     };
     await UserModal.findByIdAndUpdate(id, updateduser, { new: true });

@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
     isBought:{type:Boolean,default:false},
 
     paytitle:{type:String},
-    amount:{type:Number},
+    amount:{type:Number,default:0},
     payname:{type:String},
     payuserid:{type:String},
     trxref:{type:String},
