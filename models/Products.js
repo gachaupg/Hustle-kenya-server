@@ -56,6 +56,7 @@ const userContentSchema = mongoose.Schema(
     specifications3: { type: String },
     specifications4: { type: String },
     tell: { type: Number },
+    tell1: { type: Number },
     price: { type: Number },
     age: { type: Number },
     discountPrice: { type: Number },
